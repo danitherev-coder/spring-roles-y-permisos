@@ -17,6 +17,5 @@ import lombok.Setter;
 public class PermissionResponse {
     private Long id;
     private String name;
-    private Set<RoleSimpleResponse> roles;
-    //private Set<RoleResponse> roles;
+    private Set<RoleSimpleResponse> roles;    
 }

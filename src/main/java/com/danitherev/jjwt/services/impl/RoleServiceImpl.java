@@ -2,8 +2,10 @@ package com.danitherev.jjwt.services.impl;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.danitherev.jjwt.exceptions.ApiErrors;
 import com.danitherev.jjwt.model.dto.role.request.RoleDto;
 import com.danitherev.jjwt.model.dto.role.request.RoleSimpleDto;
 import com.danitherev.jjwt.model.dto.role.response.RoleResponse;
@@ -40,23 +42,29 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleResponse getById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+        Role role = roleRepository.findById(id).orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "Role not found"));
+        return roleMapper.roleDtoToRoleResponse(roleMapper.convertRoleToRoleDto(role));
     }
 
     @Override
-    public List<Role> getAll() {
+    public List<RoleResponse> getAll() {
         List<Role> roles = roleRepository.findAll();
         // Quiero obtener los roles en consola
         System.out.println(roles.toString() + "tengo algo");
 
-        return roles;
+        return roleMapper.listRoleDtoToListRoleResponse(roleMapper.listRoleToListRoleDto(roles));
     }
 
     @Override
     public void delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        Role role = roleRepository.findById(id)
+            .orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "Role no encontrado"));
+        
+        // Limpiar las relaciones con los permisos
+        role.getPermissions().clear();
+        
+        // Eliminar el rol
+        roleRepository.delete(role);
     }
 
     @Override

@@ -11,7 +11,8 @@ public interface PermissionService {
     PermissionSimpleResponse create(PermissionDto permissionDto);
     PermissionSimpleResponse update(Long id, PermissionDto permissionDto);
     void delete(Long id);
-    PermissionSimpleResponse findById(Long id);
+    //PermissionSimpleResponse findById(Long id);
+    PermissionResponse findById(Long id);
     //PermissionResponse findById(Long id);
     // List<PermissionSimpleResponse> getAll();
     List<PermissionResponse> getAll();

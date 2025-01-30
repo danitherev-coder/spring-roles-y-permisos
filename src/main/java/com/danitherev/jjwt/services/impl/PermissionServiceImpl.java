@@ -57,8 +57,8 @@ public class PermissionServiceImpl implements PermissionService {
         Permission savedPermission = permissionRepository.save(permission);
 
         // Convertir Permission a DTO y luego a Response
-        return permissionMapper.convertPermissionDtoToPermissionResponse(
-            permissionMapper.convertPermissionToPermissionDto(savedPermission)
+        return permissionMapper.convertPermissionSimpleDtoToPermissionSimpleResponse(
+            permissionMapper.convertPermissionToPermissionSimpleDto(savedPermission)
         );
     }
 
@@ -74,18 +74,16 @@ public class PermissionServiceImpl implements PermissionService {
         permissionRepository.deleteById(id);
     }
 
-    @Override
-    public PermissionSimpleResponse findById(Long id) {
-        Permission permission = permissionRepository.findById(id).orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "Permission not found"));
-        return permissionMapper.convertPermissionDtoToPermissionResponse(permissionMapper.convertPermissionToPermissionDto(permission));
+    @Override    
+    public PermissionResponse findById(Long id) {
+        Permission permission = permissionRepository.findById(id).orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "Permission not found"));        
+        return permissionMapper.permissionDtoToPermissionResponse(permissionMapper.permissionToPermissionDto(permission));
     }
 
     @Override
-    public List<PermissionResponse> getAll() {
-    // public List<PermissionSimpleResponse> getAll() {
+    public List<PermissionResponse> getAll() {    
         List<Permission> permissions = permissionRepository.findAll();
-        return permissionMapper.permissionDtosToPermissionResponse(permissionMapper.permissionToPermissionDto(permissions));
-        // return permissionMapper.permissionDtosToPermissionResponse(permissionMapper.permissionToPermissionDto(permissions));
+        return permissionMapper.permissionDtosToPermissionResponse(permissionMapper.permissionToPermissionDto(permissions));        
     }
     
 }

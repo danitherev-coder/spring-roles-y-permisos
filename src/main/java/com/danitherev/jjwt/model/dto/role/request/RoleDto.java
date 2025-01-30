@@ -20,6 +20,5 @@ public class RoleDto {
     private Long id;
     @NotEmpty(message = "El nombre del Role es obligatorio")
     private String name;
-    //private Set<PermissionDto> permissionDtos = new HashSet<>();
     private Set<PermissionSimpleResponse> permissions = new HashSet<>();
 }

@@ -6,7 +6,6 @@ import com.danitherev.jjwt.model.dto.role.request.RoleSimpleDto;
 import com.danitherev.jjwt.model.dto.role.response.RoleResponse;
 import com.danitherev.jjwt.model.dto.role.response.RoleSimpleResponse;
 import com.danitherev.jjwt.model.entity.Role;
-import com.danitherev.jjwt.model.mapper.permission.PermissionMapper;
 
 import java.util.List;
 
@@ -18,31 +17,19 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
     RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
-
-    
+    // =========================== CREATE ==========================
     @Mapping(target = "permissions", ignore = true)
     Role convertRoleSimpleDtoToRole(RoleSimpleDto roleSimpleDto);    
-    RoleSimpleDto convertRoletoRoleSimpleDto(Role role);
+    RoleSimpleDto convertRoletoRoleSimpleDto(Role role);    
     RoleSimpleResponse convertRoleSimpleDtoToRoleSimpleResponse(RoleSimpleDto roleSimpleDto);
-
-    // @Mapping(target = "permissions", ignore = true)
-    // Role convertRoleDtoToRole(RoleDto roleDto);
-
-    // @Mapping(target = "permissions", ignore = true)
-    // RoleDto convertRoleToRoleDto(Role role);
-
-    // ============================================
-
-    //@Mapping(source = "permissions", target = "permissionDtos")
-    RoleDto convertRoleToRoleDto(Role role);
-
-    //@Mapping(source = "permissions", target = "permissions")
-    RoleResponse convertRoleToRoleResponse(Role role);
-
-    List<RoleDto> convertRolesToRoleDtos(List<Role> roles);
-    List<RoleResponse> convertRolesToRoleResponses(List<Role> roles);
-
-    // Para el mapeo inverso
+    // ============================ FindById - Obtener Role y sus Permisos
+    RoleResponse roleDtoToRoleResponse(RoleDto roleDto);
+    // ============================ GET ALL - Obtener todos los roles y sus Permisos
+    List<RoleDto> listRoleToListRoleDto(List<Role> roles);
+    List<RoleResponse> listRoleDtoToListRoleResponse(List<RoleDto> roleDtos);
+    // ================== NO LO ESTOY USANDO EN EL RoleServiceImpl - SINO QUE FUNCIONA EN PERMISSIONMAPPER XDDD ========================
+    // Sin esto, al hacer un GET en Permission, me devuele un error de que hay una recursion infinita
+    RoleDto convertRoleToRoleDto(Role role);    
     @Mapping(target = "permissions", ignore = true)
     Role convertRoleDtoToRole(RoleDto roleDto);
 }
