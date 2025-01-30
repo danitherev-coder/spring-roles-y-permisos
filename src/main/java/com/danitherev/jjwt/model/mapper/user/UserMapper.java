@@ -28,7 +28,7 @@ public interface UserMapper {
 
     // Métodos de conversión para lista
     List<User> listUserDtoToListUser(List<UserDto> listUserDto);
-    List<UserDto> convertListUserDtoToListUser(List<User> listUser);
+    List<UserDto> convertListUserToListUserDto(List<User> listUser);
     List<UserResponse> convertListUserDtoToListUserResponse(List<UserDto> listUserDto);
     List<UserResponse> convertListUserToListUserResponse(List<User> listUser);
 }

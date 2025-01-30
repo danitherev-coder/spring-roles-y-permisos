@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 
 @Entity
@@ -23,6 +25,9 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "role")
+    @JsonIgnore
+    private Set<User> users;
     
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

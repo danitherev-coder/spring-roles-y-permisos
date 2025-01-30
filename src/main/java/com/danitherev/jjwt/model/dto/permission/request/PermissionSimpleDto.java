@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PermissionSimpleDto {
-    private Long id;
-    @NotEmpty(message = "El nombre del Permiso es obligatorio")
+    private Long id;    
+    @NotEmpty(message = "El campo no debe estar en blanco")
     private String name;
 }

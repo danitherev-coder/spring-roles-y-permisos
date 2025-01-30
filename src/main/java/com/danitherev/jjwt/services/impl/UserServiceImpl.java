@@ -1,5 +1,6 @@
 package com.danitherev.jjwt.services.impl;
 
+import com.danitherev.jjwt.exceptions.ApiErrors;
 import com.danitherev.jjwt.model.dto.user.request.UserDto;
 import com.danitherev.jjwt.model.dto.user.response.UserResponse;
 import com.danitherev.jjwt.model.entity.Role;
@@ -11,7 +12,10 @@ import com.danitherev.jjwt.validations.RoleValidation;
 import com.danitherev.jjwt.validations.UserValidation;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,21 +44,67 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getById(Long id) {
-        return null;
+        User user = userRepository.findById(id)
+            .orElseThrow(()-> new ApiErrors(HttpStatus.NOT_FOUND, "El user con el id "+id+" no existe"));
+
+        return userMapper.convertUserDtoToUserResponse(userMapper.convertUserToUserDto(user));
     }
 
     @Override
+    @Transactional
     public UserResponse update(Long id, UserDto userDto) {
-        return null;
+            // Buscar usuario existente
+            User existingUser = userRepository.findById(id)
+            .orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "El usuario con el id " + id + " no existe"));
+    
+            // Validar username solo si cambió y no es del mismo usuario
+            if (!existingUser.getUsername().equals(userDto.getUsername())) {
+                User userWithUsername = userRepository.findByUsername(userDto.getUsername());
+                if (userWithUsername != null && !userWithUsername.getId().equals(id)) {
+                    throw new ApiErrors(HttpStatus.BAD_REQUEST, "El nombre de usuario ya está en uso");
+                }
+            }
+    
+            // Validar email solo si cambió y no es del mismo usuario
+            if (!existingUser.getEmail().equals(userDto.getEmail())) {
+                User userWithEmail = userRepository.findByEmail(userDto.getEmail());
+                if (userWithEmail != null && !userWithEmail.getId().equals(id)) {
+                    throw new ApiErrors(HttpStatus.BAD_REQUEST, "El correo electrónico ya está en uso");
+                }
+            }
+    
+            // Actualizar información básica
+            existingUser.setUsername(userDto.getUsername());
+            existingUser.setFirstName(userDto.getFirstName());
+            existingUser.setLastName(userDto.getLastName());
+            existingUser.setEmail(userDto.getEmail());
+            
+            // Actualizar contraseña si se proporciona
+            if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
+                existingUser.setPassword(userDto.getPassword());
+            }
+    
+            // Actualizar rol si se proporciona
+            if (userDto.getRole() != null && userDto.getRole().getName() != null) {
+                Role newRole = roleValidation.getExistingRole(userDto.getRole().getName());
+                existingUser.setRole(newRole);
+            }
+    
+            // Guardar y retornar usuario actualizado
+            User updatedUser = userRepository.save(existingUser);
+            return userMapper.convertUserDtoToUserResponse(userMapper.convertUserToUserDto(updatedUser));
     }
 
     @Override
     public void delete(Long id) {
-        // TODO document why this method is empty
+        this.getById(id);
+        userRepository.deleteById(id);
     }
 
     @Override
     public List<UserResponse> getAll() {
-        return List.of();
+        List<User> users = userRepository.findAll();
+
+        return userMapper.convertListUserDtoToListUserResponse(userMapper.convertListUserToListUserDto(users));
     }
 }

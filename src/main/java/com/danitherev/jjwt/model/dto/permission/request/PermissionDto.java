@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.danitherev.jjwt.model.dto.role.request.RoleDto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,8 +18,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PermissionDto {
-    private Long id;
-    @NotEmpty(message = "El nombre del Permiso es obligatorio")
+    private Long id;    
+    @NotBlank(message = "El campo no debe estar en blanco")
     private String name;
     @NotEmpty(message = "Debe asignar el Role al que pertencera este permiso")
     private Set<RoleDto> roles = new HashSet<>();
