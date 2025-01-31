@@ -14,6 +14,7 @@ import com.danitherev.jjwt.validations.UserValidation;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserValidation userValidation;
     private final RoleValidation roleValidation;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse create(UserDto userDto) {
@@ -36,6 +38,7 @@ public class UserServiceImpl implements UserService {
     
         User user = userMapper.convertUserDtoToUser(userDto);
         user.setRole(role);  // Asignar el rol completo con su ID
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
     
         User savedUser = userRepository.save(user);
         return userMapper.convertUserDtoToUserResponse(userMapper.convertUserToUserDto(savedUser));
@@ -59,8 +62,10 @@ public class UserServiceImpl implements UserService {
     
             // Validar username solo si cambió y no es del mismo usuario
             if (!existingUser.getUsername().equals(userDto.getUsername())) {
-                User userWithUsername = userRepository.findByUsername(userDto.getUsername());
-                if (userWithUsername != null && !userWithUsername.getId().equals(id)) {
+                User userWithUsername = userRepository.findByUsername(userDto.getUsername()).orElseThrow(()->{
+                    throw new ApiErrors(HttpStatus.BAD_REQUEST, "El nombre de usuario ya está en uso");
+                });
+                if (!userWithUsername.getId().equals(id)) {
                     throw new ApiErrors(HttpStatus.BAD_REQUEST, "El nombre de usuario ya está en uso");
                 }
             }
@@ -81,7 +86,7 @@ public class UserServiceImpl implements UserService {
             
             // Actualizar contraseña si se proporciona
             if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
-                existingUser.setPassword(userDto.getPassword());
+                existingUser.setPassword(passwordEncoder.encode( userDto.getPassword()));
             }
     
             // Actualizar rol si se proporciona

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,27 +28,32 @@ import lombok.RequiredArgsConstructor;
 public class PermissionController {
     private final PermissionService permissionService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<PermissionSimpleResponse> create(@RequestBody @Valid PermissionDto permissionDto) {
         return new ResponseEntity<>(permissionService.create(permissionDto), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<PermissionResponse>> getAll() {
         return new ResponseEntity<>(permissionService.getAll(), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")    
     public ResponseEntity<PermissionResponse> getById(@PathVariable Long id) {
         return new ResponseEntity<>(permissionService.findById(id),HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         permissionService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<PermissionSimpleResponse> update(@PathVariable Long id, @RequestBody @Valid PermissionDto permissionDto) {
         return new ResponseEntity<>(permissionService.update(id, permissionDto), HttpStatus.OK);
