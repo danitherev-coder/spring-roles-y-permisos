@@ -66,15 +66,4 @@ public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
         );
         return new ResponseEntity<>(errorDetalles, HttpStatus.UNAUTHORIZED);
     }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorDetails> handleAccessDeniedException(AccessDeniedException exception,
-                                                                        WebRequest webRequest) {
-            ErrorDetails errorDetalles = new ErrorDetails(
-            LocalDateTime.now(),
-            exception.getMessage(),
-            webRequest.getDescription(false)
-        );
-        return new ResponseEntity<>(errorDetalles, HttpStatus.FORBIDDEN);
-    }
 }
