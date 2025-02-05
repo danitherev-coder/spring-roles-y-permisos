@@ -32,9 +32,9 @@ public class BSecurityConfig {
             .exceptionHandling(exceptions -> exceptions.accessDeniedHandler(customAccessDeniedHandler))
             .authorizeHttpRequests(authorizeHttp -> {
                 authorizeHttp.requestMatchers("/api/v1/auth/**").permitAll();
-                authorizeHttp.requestMatchers("/api/v1/users/**").hasRole("ADMIN");                 
-                authorizeHttp.requestMatchers("/api/v1/roles/**").hasRole("ADMIN");
-                authorizeHttp.requestMatchers("/api/v1/permission/**").hasRole("ADMIN");
+                authorizeHttp.requestMatchers("/api/v1/users/**").hasAnyAuthority("ROLE_ADMIN", "READ");                 
+                authorizeHttp.requestMatchers("/api/v1/roles/**").hasAnyAuthority("ROLE_ADMIN", "READ");
+                authorizeHttp.requestMatchers("/api/v1/permission/**").hasAnyAuthority("ROLE_ADMIN", "READ");
                 authorizeHttp.anyRequest().denyAll();
             });        
         return http.build();

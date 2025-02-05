@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.danitherev.jjwt.config.security.DAuthenticationService;
 import com.danitherev.jjwt.model.dto.auth.request.AuthDto;
 import com.danitherev.jjwt.model.dto.auth.request.RegisterDto;
 import com.danitherev.jjwt.model.dto.auth.response.AuthResponse;
 import com.danitherev.jjwt.model.dto.auth.response.RegisterResponse;
+import com.danitherev.jjwt.services.AuthService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +20,17 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final DAuthenticationService authenticationService;
+    private final AuthService authService;
 
     @PreAuthorize("permitAll()")
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthDto authRequest){
-        return ResponseEntity.ok(authenticationService.login(authRequest));
+        return ResponseEntity.ok(authService.login(authRequest));
     }
 
     @PreAuthorize("permitAll()")
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@RequestBody @Valid RegisterDto registerDto){
-        return ResponseEntity.ok(authenticationService.register(registerDto));
+        return ResponseEntity.ok(authService.register(registerDto));
     }
 }

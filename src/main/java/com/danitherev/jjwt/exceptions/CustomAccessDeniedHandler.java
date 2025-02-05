@@ -32,7 +32,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         ErrorDetails errorDetails = new ErrorDetails(
             LocalDateTime.now(),
             "Acceso denegado: No tienes los permisos necesarios",
-            request.getRequestURI()                    
+            "uri="+request.getRequestURI()                    
         );
         String jsonResponse = objectMapper.writeValueAsString(errorDetails); // aca lo estoy transformando a JSON
         response.getWriter().write(jsonResponse);
