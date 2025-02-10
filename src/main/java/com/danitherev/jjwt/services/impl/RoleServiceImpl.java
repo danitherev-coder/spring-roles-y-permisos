@@ -1,12 +1,15 @@
 package com.danitherev.jjwt.services.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.danitherev.jjwt.exceptions.ApiErrors;
+import com.danitherev.jjwt.model.dto.role.request.RoleDto;
 import com.danitherev.jjwt.model.dto.role.request.RoleSimpleDto;
 import com.danitherev.jjwt.model.dto.role.response.RoleResponse;
 import com.danitherev.jjwt.model.dto.role.response.RoleSimpleResponse;
@@ -16,15 +19,17 @@ import com.danitherev.jjwt.repository.RoleRepository;
 import com.danitherev.jjwt.services.RoleService;
 import com.danitherev.jjwt.validations.RoleValidation;
 
-import lombok.RequiredArgsConstructor;
+
 
 @Service
-@RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 
-    private final RoleRepository roleRepository;
-    private final RoleValidation roleValidation;
-    private final RoleMapper roleMapper;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private RoleValidation roleValidation;
+    @Autowired
+    private RoleMapper roleMapper;
 
     @Override
     public RoleSimpleResponse create(RoleSimpleDto roleSimpleDto) {
@@ -49,10 +54,12 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<RoleResponse> getAll() {
         List<Role> roles = roleRepository.findAll();
-        // Quiero obtener los roles en consola
-        System.out.println(roles.toString() + "tengo algo");
-
-        return roleMapper.listRoleDtoToListRoleResponse(roleMapper.listRoleToListRoleDto(roles));
+        return roles.stream()
+            .map(role -> {
+                RoleDto dto = roleMapper.convertRoleToRoleDto(role);
+                return roleMapper.roleDtoToRoleResponse(dto);
+            })
+            .collect(Collectors.toList());
     }
 
     @Override

@@ -2,13 +2,8 @@ package com.danitherev.jjwt.exceptions;
 
 
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
+
 public class ErrorDetails {    
     private LocalDateTime timestamp;
     private String message;
@@ -18,6 +13,33 @@ public class ErrorDetails {
         super();
         this.timestamp = timestap;
         this.message = message;
+        this.details = details;
+    }
+
+    public ErrorDetails() {
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
         this.details = details;
     }
 }

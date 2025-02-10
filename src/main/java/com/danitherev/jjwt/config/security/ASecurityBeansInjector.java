@@ -1,5 +1,6 @@
 package com.danitherev.jjwt.config.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -13,12 +14,10 @@ import org.springframework.stereotype.Component;
 
 import com.danitherev.jjwt.repository.UserRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Component
-@RequiredArgsConstructor
 public class ASecurityBeansInjector {
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{

@@ -1,5 +1,6 @@
 package com.danitherev.jjwt.validations;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -8,13 +9,11 @@ import com.danitherev.jjwt.model.entity.Role;
 import com.danitherev.jjwt.repository.RoleRepository;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class RoleValidation {
-
-    private final RoleRepository roleRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     public void validateRoleDoesNotExists(String name){
         if (roleRepository.existsByNameIgnoreCase(name)) {
@@ -23,9 +22,8 @@ public class RoleValidation {
     }
 
     public Role getExistingRole(String name) {
-        Role role = roleRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new EntityNotFoundException("El rol especificado no existe: " + name));        
-        return role;
+        return roleRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new EntityNotFoundException("El rol especificado no existe: " + name));
     }
     
 }

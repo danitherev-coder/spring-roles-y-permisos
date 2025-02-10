@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +22,18 @@ import com.danitherev.jjwt.repository.PermissionRepository;
 import com.danitherev.jjwt.services.PermissionService;
 import com.danitherev.jjwt.validations.PermissionValidation;
 import com.danitherev.jjwt.validations.RoleValidation;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class PermissionServiceImpl implements PermissionService {
 
-    private final PermissionRepository permissionRepository;
-    private final PermissionMapper permissionMapper;
-    private final PermissionValidation permissionValidation;
-    private final RoleValidation roleValidation;
+    @Autowired
+    private PermissionRepository permissionRepository;
+    @Autowired
+    private PermissionMapper permissionMapper;
+    @Autowired
+    private PermissionValidation permissionValidation;
+    @Autowired
+    private RoleValidation roleValidation;
 
     @Override
     public PermissionSimpleResponse create(PermissionDto permissionDto) {

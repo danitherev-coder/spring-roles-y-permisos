@@ -3,6 +3,7 @@ package com.danitherev.jjwt.config.security;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,20 +26,19 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class EJwtAuthenticationFilter  extends OncePerRequestFilter {
-    private final UserRepository userRepository;
-    private final CJwtService jwtService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CJwtService jwtService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         
-        try {
-            //TODO: 1. Obtener el HEADER que contiene el JWT
+        try {            
             String authHeader = request.getHeader("Authorization");
             if(authHeader == null || !authHeader.startsWith("Bearer ")){
                 filterChain.doFilter(request, response);
@@ -52,8 +52,7 @@ public class EJwtAuthenticationFilter  extends OncePerRequestFilter {
                 username, null, user.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
-
-            //TODO: 5. Ejecutar el restro de filtros
+            
             filterChain.doFilter(request, response);
 
             

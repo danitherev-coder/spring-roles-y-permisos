@@ -2,6 +2,7 @@ package com.danitherev.jjwt.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,14 +22,12 @@ import com.danitherev.jjwt.model.dto.role.response.RoleSimpleResponse;
 import com.danitherev.jjwt.services.RoleService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/roles")
 public class RoleController {
-
-    private final RoleService roleService;
+    @Autowired
+    private RoleService roleService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping

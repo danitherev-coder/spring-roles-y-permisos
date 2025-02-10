@@ -1,5 +1,6 @@
 package com.danitherev.jjwt.config.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,15 +13,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.danitherev.jjwt.exceptions.CustomAccessDeniedHandler;
 
-import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 @EnableMethodSecurity
 public class BSecurityConfig {
-    private final AuthenticationProvider authenticationProvider;
-    private final EJwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
+    @Autowired
+    private EJwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception{

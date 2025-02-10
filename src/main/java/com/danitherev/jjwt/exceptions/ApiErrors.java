@@ -2,13 +2,8 @@ package com.danitherev.jjwt.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
+
 public class ApiErrors extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
@@ -18,6 +13,26 @@ public class ApiErrors extends RuntimeException {
     public ApiErrors(HttpStatus estado, String message) {
         super();  // Pasar el mensaje al constructor de RuntimeException
         this.estado = estado;
+        this.message = message;
+    }
+
+    public ApiErrors() {
+    }
+
+    public HttpStatus getEstado() {
+        return estado;
+    }
+
+    public void setEstado(HttpStatus estado) {
+        this.estado = estado;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
         this.message = message;
     }
 }

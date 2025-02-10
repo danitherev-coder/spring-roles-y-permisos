@@ -1,5 +1,6 @@
 package com.danitherev.jjwt.validations;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -8,12 +9,11 @@ import com.danitherev.jjwt.model.entity.Permission;
 import com.danitherev.jjwt.repository.PermissionRepository;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class PermissionValidation {
-    private final PermissionRepository permissionRepository;
+    @Autowired
+    private PermissionRepository permissionRepository;
 
     public void validatePermissionDoesNotExists (String name){
         if (permissionRepository.existsByNameIgnoreCase(name)) {

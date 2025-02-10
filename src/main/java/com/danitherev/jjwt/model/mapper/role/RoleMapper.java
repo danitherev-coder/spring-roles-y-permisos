@@ -16,6 +16,7 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
+
     RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
     // =========================== CREATE y UPDATE ==========================================================
     @Mapping(target = "permissions", ignore = true)

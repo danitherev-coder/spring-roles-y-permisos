@@ -2,6 +2,7 @@ package com.danitherev.jjwt.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,13 +21,12 @@ import com.danitherev.jjwt.model.dto.permission.response.PermissionSimpleRespons
 import com.danitherev.jjwt.services.PermissionService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/permission")
 public class PermissionController {
-    private final PermissionService permissionService;
+    @Autowired
+    private PermissionService permissionService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
@@ -34,7 +34,7 @@ public class PermissionController {
         return new ResponseEntity<>(permissionService.create(permissionDto), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasAuthority('READ')")
     @GetMapping
     public ResponseEntity<List<PermissionResponse>> getAll() {
         return new ResponseEntity<>(permissionService.getAll(), HttpStatus.OK);

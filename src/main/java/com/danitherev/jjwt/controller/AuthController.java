@@ -1,5 +1,6 @@
 package com.danitherev.jjwt.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,13 +15,12 @@ import com.danitherev.jjwt.model.dto.auth.response.RegisterResponse;
 import com.danitherev.jjwt.services.AuthService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@RequiredArgsConstructor
 public class AuthController {
-    private final AuthService authService;
+    @Autowired
+    private AuthService authService;
 
     @PreAuthorize("permitAll()")
     @PostMapping("/login")

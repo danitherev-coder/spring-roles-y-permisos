@@ -3,6 +3,7 @@ package com.danitherev.jjwt.services.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,19 +25,25 @@ import com.danitherev.jjwt.services.AuthService;
 import com.danitherev.jjwt.validations.RoleValidation;
 import com.danitherev.jjwt.validations.UserValidation;
 
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final UserRepository userRepository;
-    private final CJwtService jwtService;
-    private final AuthenticationManager authenticationManager;
-    private final UserValidation userValidation;
-    private final PasswordEncoder passwordEncoder;
-    private final RoleValidation roleValidation;
-    private final RoleMapper roleMapper;
-    private final RegisterMapper registerMapper;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CJwtService jwtService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserValidation userValidation;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RoleValidation roleValidation;
+    @Autowired
+    private RoleMapper roleMapper;
+    @Autowired
+    private RegisterMapper registerMapper;
 
     @Override
     public AuthResponse login(AuthDto authDto) {
