@@ -1,12 +1,12 @@
 package com.danitherev.jjwt.controller;
 
+import com.danitherev.jjwt.model.dto.email.request.EmailConfirmation;
+import com.danitherev.jjwt.model.dto.email.response.EmailResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.danitherev.jjwt.model.dto.auth.request.AuthDto;
 import com.danitherev.jjwt.model.dto.auth.request.RegisterDto;
@@ -32,5 +32,17 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@RequestBody @Valid RegisterDto registerDto){
         return ResponseEntity.ok(authService.register(registerDto));
+    }
+
+    @PreAuthorize("permitAll()")
+    @GetMapping("/confirm-email/{token}")
+    public ResponseEntity<EmailResponse> confirmEmail(@PathVariable String token){
+        return new ResponseEntity<>(authService.confirmToken(token), HttpStatus.OK);
+    }
+
+    @PreAuthorize("permitAll()")
+    @PostMapping("/resend-confirmation-email")
+    public ResponseEntity<EmailResponse> resendEmailToken(@RequestBody @Valid EmailConfirmation emailConfirmation){
+        return new ResponseEntity<>(authService.resendEmailConfirmation(emailConfirmation), HttpStatus.OK);
     }
 }

@@ -29,6 +29,8 @@ public class User implements UserDetails {
     private String email;
     @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
+    private boolean confirmEmail = false;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     @JsonIgnore
@@ -47,13 +49,14 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(Long id, String username, String firstName, String lastName, String email, String password, Role role) {
+    public User(Long id, String username, String firstName, String lastName, String email, String password, Boolean confirmEmail, Role role) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.confirmEmail = confirmEmail;
         this.role = role;
     }
 
@@ -107,6 +110,14 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    public Boolean getConfirmEmail() {
+        return confirmEmail;
+    }
+
+    public void setConfirmEmail(Boolean confirmEmail) {
+        this.confirmEmail = confirmEmail;
+    }
+
     public Role getRole() {
         return role;
     }
@@ -124,6 +135,7 @@ public class User implements UserDetails {
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", confirmEmail=" + confirmEmail +
                 ", role=" + role +
                 '}';
     }

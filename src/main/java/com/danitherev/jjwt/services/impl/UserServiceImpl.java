@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -68,9 +69,7 @@ public class UserServiceImpl implements UserService {
     
             // Validar username solo si cambió y no es del mismo usuario
             if (!existingUser.getUsername().equals(userDto.getUsername())) {
-                User userWithUsername = userRepository.findByUsername(userDto.getUsername()).orElseThrow(()->{
-                    throw new ApiErrors(HttpStatus.BAD_REQUEST, "El nombre de usuario ya está en uso");
-                });
+                User userWithUsername = userRepository.findByUsername(userDto.getUsername()).orElseThrow(()-> new ApiErrors(HttpStatus.BAD_REQUEST, "El nombre de usuario ya está en uso"));
                 if (!userWithUsername.getId().equals(id)) {
                     throw new ApiErrors(HttpStatus.BAD_REQUEST, "El nombre de usuario ya está en uso");
                 }
@@ -78,8 +77,8 @@ public class UserServiceImpl implements UserService {
     
             // Validar email solo si cambió y no es del mismo usuario
             if (!existingUser.getEmail().equals(userDto.getEmail())) {
-                User userWithEmail = userRepository.findByEmail(userDto.getEmail());
-                if (userWithEmail != null && !userWithEmail.getId().equals(id)) {
+                Optional<User> userWithEmail = userRepository.findByEmail(userDto.getEmail());
+                if (userWithEmail.isPresent() && !userWithEmail.get().getId().equals(id)) {
                     throw new ApiErrors(HttpStatus.BAD_REQUEST, "El correo electrónico ya está en uso");
                 }
             }

@@ -46,6 +46,13 @@ public class EJwtAuthenticationFilter  extends OncePerRequestFilter {
             }
 
         String jwt = authHeader.split(" ")[1];
+
+        // Validar el token usando el servicio CJwtService
+        if (jwtService.isTokenValid(jwt)) {
+            setErrors(request, response, HttpStatus.UNAUTHORIZED, "Token inválido");
+            return;
+        }
+
         String username = jwtService.extractUsername(jwt);
         User user = userRepository.findByUsername(username).get();
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

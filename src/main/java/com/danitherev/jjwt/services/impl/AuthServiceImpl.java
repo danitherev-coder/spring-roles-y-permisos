@@ -3,7 +3,11 @@ package com.danitherev.jjwt.services.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.danitherev.jjwt.model.dto.email.request.EmailConfirmation;
+import com.danitherev.jjwt.model.dto.email.response.EmailResponse;
+import com.danitherev.jjwt.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +28,7 @@ import com.danitherev.jjwt.repository.UserRepository;
 import com.danitherev.jjwt.services.AuthService;
 import com.danitherev.jjwt.validations.RoleValidation;
 import com.danitherev.jjwt.validations.UserValidation;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -44,6 +49,10 @@ public class AuthServiceImpl implements AuthService {
     private RoleMapper roleMapper;
     @Autowired
     private RegisterMapper registerMapper;
+    @Autowired
+    private EmailService emailService;
+    @Value("${api.url}")
+    private String apiUrl;
 
     @Override
     public AuthResponse login(AuthDto authDto) {
@@ -51,12 +60,17 @@ public class AuthServiceImpl implements AuthService {
         authenticationManager.authenticate(authToken);
 
         User user = userRepository.findByUsername(authDto.getUsername()).orElseThrow(()-> new ApiErrors(HttpStatus.NOT_FOUND, "User not found"));
+        if (Boolean.FALSE.equals(user.getConfirmEmail())){
+            throw new ApiErrors(HttpStatus.BAD_REQUEST, "No confirmaste el email");
+        }
+
         String jwt = jwtService.generateToken(user, generateExtractClaim(user));
 
         return new AuthResponse(jwt);
     }
 
     @Override
+    @Transactional
     public RegisterResponse register(RegisterDto registerDto) {
         userValidation.validateUserDoesNotExists(registerDto.getUsername(), registerDto.getEmail());    
         User user = registerMapper.registerDtoToUser(registerDto);
@@ -66,12 +80,53 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
         User savUser = userRepository.save(user);
-        
+
+        String token = jwtService.activationAcc(savUser);
+        String message = "Hola " + savUser.getFirstName() + ", " + "para confirmar su email debe seguir el enlace: " + apiUrl+token;
+        emailService.sendActivationAccount(savUser.getEmail(), message);
+
         RegisterDto request = registerMapper.userToRegisterDto(savUser);
         RegisterResponse response = registerMapper.registerDtoToRegisterResponse(request);
         response.setRole(roleMapper.convertRoleSimpleDtoToRoleSimpleResponse(roleMapper.convertRoletoRoleSimpleDto(userRoleDefault)));
+        response.setMessage("User registered");
+
+        // Puedes agregar un mensaje indicando que se enviará el email en segundo plano
+        response.setMessage("Registro exitoso. Se ha enviado un email de activación a " + savUser.getEmail() + " (si no lo recibes, puedes solicitar reenvío).");
 
         return response;
+    }
+
+    @Override
+    @Transactional
+    public EmailResponse confirmToken(String token) {
+        // Validar que el token no haya expirado
+        jwtService.isTokenValid(token);
+
+        String getEmailWithJwt = jwtService.extractEmail(token);
+        User user = userRepository.findByEmail(getEmailWithJwt)
+                .orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+
+        // Marcar al usuario como confirmado
+        if (Boolean.TRUE.equals(user.getConfirmEmail())) {
+            throw new ApiErrors(HttpStatus.BAD_REQUEST, "El email ya fue confirmado, puede iniciar sesion");
+        }
+
+        user.setConfirmEmail(true);
+        userRepository.save(user);
+        return new EmailResponse(true, "Email ha sido confirmado, ahora puede iniciar sesion");
+    }
+
+    @Override
+    public EmailResponse resendEmailConfirmation(EmailConfirmation emailConfirmation) {
+        User user = userValidation.existEmail(emailConfirmation.email());
+        String token = jwtService.activationAcc(user);
+        String url = apiUrl+token;
+        String message = "Para poder activar su cuenta debe dar click en el siguiente enlace: " + url;
+
+        emailService.sendActivationAccount(user.getEmail(), message);
+
+
+        return new EmailResponse(true, "Se envio un correo de verificacion, por favor revise su email");
     }
 
     private Map<String, Object> generateExtractClaim(User user){

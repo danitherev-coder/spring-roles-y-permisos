@@ -3,6 +3,8 @@ import com.danitherev.jjwt.model.dto.role.response.RoleSimpleResponse;
 
 
 public class RegisterResponse {
+
+    private String message;
     private Long id;
     private String username;
     private String firstName;
@@ -14,7 +16,8 @@ public class RegisterResponse {
     public RegisterResponse() {
     }
 
-    public RegisterResponse(Long id, String username, String firstName, String lastName, String email, RoleSimpleResponse role) {
+    public RegisterResponse(String message, Long id, String username, String firstName, String lastName, String email, RoleSimpleResponse role) {
+        this.message = message;
         this.id = id;
         this.username = username;
         this.firstName = firstName;
@@ -24,10 +27,19 @@ public class RegisterResponse {
     }
 
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     @Override
     public String toString() {
         return "RegisterResponse{" +
-                "id=" + id +
+                "message='" + message + '\'' +
+                ", id=" + id +
                 ", username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

@@ -11,7 +11,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@Primary
 public interface PermissionRepository extends CrudRepository<Permission,Long> {
     Optional<Permission> findByNameIgnoreCase(String name);
     boolean existsByNameIgnoreCase(String name);
