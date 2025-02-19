@@ -11,7 +11,7 @@ public class ApiErrors extends RuntimeException {
     private String message;
 
     public ApiErrors(HttpStatus estado, String message) {
-        super(message);  // Pasar el mensaje al constructor de RuntimeException
+        super(message);
         this.estado = estado;
         this.message = message;
     }

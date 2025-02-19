@@ -14,8 +14,10 @@ public interface RegisterMapper {
 
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "confirmEmail", ignore = true)
     User registerDtoToUser(RegisterDto registerRequest);
     RegisterDto userToRegisterDto(User user);
     @Mapping(target = "role", ignore = true)
+    @Mapping(target = "message", ignore = true)
     RegisterResponse registerDtoToRegisterResponse(RegisterDto registerRequest);
 }

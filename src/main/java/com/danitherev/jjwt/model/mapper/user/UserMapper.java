@@ -17,6 +17,7 @@ public interface UserMapper {
     // Métodos de conversión para un único objeto
     @Mapping(source = "role", target = "role")
     @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "confirmEmail", ignore = true)
     User convertUserDtoToUser(UserDto userDto);
     
     UserDto convertUserToUserDto(User user);

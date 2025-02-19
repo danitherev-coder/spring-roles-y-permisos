@@ -78,7 +78,7 @@ public class CJwtService {
             return true; // Retorna true si el token es válido
         } catch (ExpiredJwtException ex) {
             throw new ApiErrors(HttpStatus.BAD_REQUEST, "El token ha expirado");
-        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException ex) {
+        } catch (UnsupportedJwtException | MalformedJwtException ex) {
             throw new ApiErrors(HttpStatus.UNAUTHORIZED, "Token inválido: " + ex.getMessage());
         } catch (IllegalArgumentException ex) {
             throw new ApiErrors(HttpStatus.INTERNAL_SERVER_ERROR, "Error en el argumento del token: " + ex.getMessage());

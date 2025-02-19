@@ -1,7 +1,8 @@
 package com.danitherev.jjwt.controller;
 
-import com.danitherev.jjwt.model.dto.email.request.EmailConfirmation;
+import com.danitherev.jjwt.model.dto.email.request.EmailConfirmationDto;
 import com.danitherev.jjwt.model.dto.email.response.EmailResponse;
+import com.danitherev.jjwt.model.dto.user.request.ChangePasswordDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,19 @@ public class AuthController {
 
     @PreAuthorize("permitAll()")
     @PostMapping("/resend-confirmation-email")
-    public ResponseEntity<EmailResponse> resendEmailToken(@RequestBody @Valid EmailConfirmation emailConfirmation){
+    public ResponseEntity<EmailResponse> resendEmailToken(@RequestBody @Valid EmailConfirmationDto emailConfirmation){
         return new ResponseEntity<>(authService.resendEmailConfirmation(emailConfirmation), HttpStatus.OK);
+    }
+
+    @PreAuthorize("permitAll()")
+    @PostMapping("/forgot-password")
+    public ResponseEntity<EmailResponse> forgotPassword(@RequestBody @Valid EmailConfirmationDto emailConfirmation){
+        return new ResponseEntity<>(authService.forgotPassword(emailConfirmation), HttpStatus.OK);
+    }
+
+    @PreAuthorize("permitAll()")
+    @PutMapping("/change-password/{token}")
+    public ResponseEntity<EmailResponse> forgotPassword(@RequestBody @Valid ChangePasswordDto changePasswordDto,@PathVariable String token){
+        return new ResponseEntity<>(authService.changePassword(changePasswordDto, token), HttpStatus.OK);
     }
 }

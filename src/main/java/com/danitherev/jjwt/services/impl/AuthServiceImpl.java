@@ -3,8 +3,9 @@ package com.danitherev.jjwt.services.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.danitherev.jjwt.model.dto.email.request.EmailConfirmation;
+import com.danitherev.jjwt.model.dto.email.request.EmailConfirmationDto;
 import com.danitherev.jjwt.model.dto.email.response.EmailResponse;
+import com.danitherev.jjwt.model.dto.user.request.ChangePasswordDto;
 import com.danitherev.jjwt.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
     private EmailService emailService;
     @Value("${api.url}")
     private String apiUrl;
+
 
     @Override
     public AuthResponse login(AuthDto authDto) {
@@ -103,21 +105,15 @@ public class AuthServiceImpl implements AuthService {
         jwtService.isTokenValid(token);
 
         String getEmailWithJwt = jwtService.extractEmail(token);
-        User user = userRepository.findByEmail(getEmailWithJwt)
-                .orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
-
-        // Marcar al usuario como confirmado
-        if (Boolean.TRUE.equals(user.getConfirmEmail())) {
-            throw new ApiErrors(HttpStatus.BAD_REQUEST, "El email ya fue confirmado, puede iniciar sesion");
-        }
+        User user = userRepository.findByEmail(getEmailWithJwt).orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
         user.setConfirmEmail(true);
         userRepository.save(user);
-        return new EmailResponse(true, "Email ha sido confirmado, ahora puede iniciar sesion");
+        return new EmailResponse(true, "Email ha sido confirmado");
     }
 
     @Override
-    public EmailResponse resendEmailConfirmation(EmailConfirmation emailConfirmation) {
+    public EmailResponse resendEmailConfirmation(EmailConfirmationDto emailConfirmation) {
         User user = userValidation.existEmail(emailConfirmation.email());
         String token = jwtService.activationAcc(user);
         String url = apiUrl+token;
@@ -127,6 +123,26 @@ public class AuthServiceImpl implements AuthService {
 
 
         return new EmailResponse(true, "Se envio un correo de verificacion, por favor revise su email");
+    }
+
+    @Override
+    public EmailResponse forgotPassword(EmailConfirmationDto emailConfirmation) {
+        User user = userValidation.existEmail(emailConfirmation.email());
+        String token = jwtService.activationAcc(user);
+        String message = "Hola " + user.getFirstName()+ " " + user.getLastName() + " , " + "para cambiar el password siga el enlace: " + apiUrl+token;
+        emailService.sendActivationAccount(user.getEmail(), message);
+
+        return new EmailResponse(true, "Se acaba de enviar un email, por favor revise su buzon");
+    }
+
+    @Override
+    public EmailResponse changePassword(ChangePasswordDto changePasswordDto, String token) {
+        String email = jwtService.extractEmail(token);
+        User user = userValidation.existEmail(email);
+        user.setPassword(passwordEncoder.encode(changePasswordDto.password()));
+        userRepository.save(user);
+
+        return new EmailResponse(true, "Se cambio el password, ahora puede iniciar sesion");
     }
 
     private Map<String, Object> generateExtractClaim(User user){
