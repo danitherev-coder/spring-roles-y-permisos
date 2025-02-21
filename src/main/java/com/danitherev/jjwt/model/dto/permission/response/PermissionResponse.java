@@ -2,7 +2,6 @@ package com.danitherev.jjwt.model.dto.permission.response;
 
 import java.util.Set;
 
-//import com.danitherev.jjwt.model.dto.role.response.RoleResponse;
 import com.danitherev.jjwt.model.dto.role.response.RoleSimpleResponse;
 
 

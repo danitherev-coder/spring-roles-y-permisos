@@ -17,17 +17,17 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class CJwtService {
     @Value("${security.jwt.expiration-minutes}")
-    private Long EXPIRATION_MINUTES;
+    private Long expirationMinutes;
     @Value("${security.jwt.secret-key}")
-    private String SECRET_KEY;
+    private String secretKey;
 
     // Configuracion de la duracion del token para activar cuenta
     @Value("${security.jwt.expiration-minutes-token}")
-    private Long EXPIRATION_MINUTES_TOKEN;
+    private Long expirationMinutesToken;
 
     public String generateToken(User user, Map<String, Object> extractClaim) {
         Date issuedtAt = new Date();
-        Date expiration = new Date(issuedtAt.getTime() + (EXPIRATION_MINUTES * 60 * 1000));
+        Date expiration = new Date(issuedtAt.getTime() + (expirationMinutes * 60 * 1000));
 
         return Jwts.builder()
         .setClaims(extractClaim)
@@ -41,7 +41,7 @@ public class CJwtService {
 
     public String activationAcc(User user){
         Date issuedAt = new Date();
-        Date expiration = new Date(issuedAt.getTime() + (EXPIRATION_MINUTES_TOKEN * 60 * 1000));
+        Date expiration = new Date(issuedAt.getTime() + (expirationMinutesToken * 60 * 1000));
 
         return Jwts.builder()
                 .setSubject(user.getEmail())
@@ -52,7 +52,7 @@ public class CJwtService {
     }
 
     private Key generateKey(){
-        byte[] secretAsByte = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] secretAsByte = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(secretAsByte);
     }
 
@@ -69,6 +69,22 @@ public class CJwtService {
         .parseClaimsJws(jwt).getBody();
     }
 
+//    public boolean isTokenValid(String token) {
+//        try {
+//            Jwts.parserBuilder()
+//                    .setSigningKey(generateKey())
+//                    .build()
+//                    .parseClaimsJws(token);
+//            return true; // Retorna true si el token es válido
+//        } catch (ExpiredJwtException ex) {
+//            throw new ApiErrors(HttpStatus.BAD_REQUEST, "El token ha expirado");
+//        } catch (UnsupportedJwtException | MalformedJwtException ex) {
+//            throw new ApiErrors(HttpStatus.UNAUTHORIZED, "Token inválido: " + ex.getMessage());
+//        } catch (IllegalArgumentException ex) {
+//            throw new ApiErrors(HttpStatus.INTERNAL_SERVER_ERROR, "Error en el argumento del token: " + ex.getMessage());
+//        }
+//    }
+
     public boolean isTokenValid(String token) {
         try {
             Jwts.parserBuilder()
@@ -77,11 +93,9 @@ public class CJwtService {
                     .parseClaimsJws(token);
             return true; // Retorna true si el token es válido
         } catch (ExpiredJwtException ex) {
-            throw new ApiErrors(HttpStatus.BAD_REQUEST, "El token ha expirado");
-        } catch (UnsupportedJwtException | MalformedJwtException ex) {
-            throw new ApiErrors(HttpStatus.UNAUTHORIZED, "Token inválido: " + ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            throw new ApiErrors(HttpStatus.INTERNAL_SERVER_ERROR, "Error en el argumento del token: " + ex.getMessage());
+            return false; // Token expirado
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException ex) {
+            return false; // Token inválido
         }
     }
 

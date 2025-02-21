@@ -1,5 +1,7 @@
 package com.danitherev.jjwt.model.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,13 +12,16 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "permissions")
-public class Permission {
+public class Permission implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1905122041950251207L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true)
     private String name;
-    
+
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Role> roles;

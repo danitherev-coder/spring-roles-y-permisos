@@ -1,5 +1,6 @@
 package com.danitherev.jjwt.model.entity;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +16,10 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements UserDetails{
+    @Serial
+    private static final long serialVersionUID = 2405172041950251807L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,11 +34,13 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private boolean confirmEmail = false;
+    private boolean confirmEmail = false;    
+    private String imgUrl;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     @JsonIgnore
-    private Role role;
+    private  Role role;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -49,7 +55,7 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(Long id, String username, String firstName, String lastName, String email, String password, Boolean confirmEmail, Role role) {
+    public User(Long id, String username, String firstName, String lastName, String email, String password, Boolean confirmEmail, String imgUrl, Role role) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
@@ -57,6 +63,7 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.confirmEmail = confirmEmail;
+        this.imgUrl = imgUrl;
         this.role = role;
     }
 
@@ -116,6 +123,15 @@ public class User implements UserDetails {
 
     public void setConfirmEmail(Boolean confirmEmail) {
         this.confirmEmail = confirmEmail;
+    }
+
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public Role getRole() {

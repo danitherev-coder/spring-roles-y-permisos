@@ -1,9 +1,7 @@
 package com.danitherev.jjwt.services.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,12 +22,18 @@ import com.danitherev.jjwt.validations.RoleValidation;
 @Service
 public class RoleServiceImpl implements RoleService {
 
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private RoleValidation roleValidation;
-    @Autowired
-    private RoleMapper roleMapper;
+
+    private final RoleRepository roleRepository;
+
+    private final RoleValidation roleValidation;
+
+    private final RoleMapper roleMapper;
+
+    public RoleServiceImpl(RoleRepository roleRepository, RoleValidation roleValidation, RoleMapper roleMapper) {
+        this.roleRepository = roleRepository;
+        this.roleValidation = roleValidation;
+        this.roleMapper = roleMapper;
+    }
 
     @Override
     public RoleSimpleResponse create(RoleSimpleDto roleSimpleDto) {
@@ -59,7 +63,7 @@ public class RoleServiceImpl implements RoleService {
                 RoleDto dto = roleMapper.convertRoleToRoleDto(role);
                 return roleMapper.roleDtoToRoleResponse(dto);
             })
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override

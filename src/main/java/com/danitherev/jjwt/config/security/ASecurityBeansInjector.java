@@ -1,6 +1,5 @@
 package com.danitherev.jjwt.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -16,8 +15,12 @@ import com.danitherev.jjwt.repository.UserRepository;
 
 @Component
 public class ASecurityBeansInjector {
-    @Autowired
-    private UserRepository userRepository;
+
+    private final UserRepository userRepository;
+
+    public ASecurityBeansInjector(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
@@ -40,9 +43,7 @@ public class ASecurityBeansInjector {
 
     @Bean
     UserDetailsService userDetailsService(){
-        return username -> {
-            return userRepository.findByUsername(username)
+        return username ->  userRepository.findByUsername(username)
             .orElseThrow(()-> new UsernameNotFoundException("User not found with username: " + username));
-        };
     }
 }

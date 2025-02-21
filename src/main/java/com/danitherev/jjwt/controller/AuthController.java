@@ -3,7 +3,6 @@ package com.danitherev.jjwt.controller;
 import com.danitherev.jjwt.model.dto.email.request.EmailConfirmationDto;
 import com.danitherev.jjwt.model.dto.email.response.EmailResponse;
 import com.danitherev.jjwt.model.dto.user.request.ChangePasswordDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,8 +19,12 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-    @Autowired
-    private AuthService authService;
+
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PreAuthorize("permitAll()")
     @PostMapping("/login")

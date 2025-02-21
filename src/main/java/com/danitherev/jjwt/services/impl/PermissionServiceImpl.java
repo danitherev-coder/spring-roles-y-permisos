@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.danitherev.jjwt.exceptions.ApiErrors;
 import com.danitherev.jjwt.model.dto.permission.request.PermissionDto;
 import com.danitherev.jjwt.model.dto.permission.response.PermissionResponse;
-//import com.danitherev.jjwt.model.dto.permission.response.PermissionResponse;
 import com.danitherev.jjwt.model.dto.permission.response.PermissionSimpleResponse;
 import com.danitherev.jjwt.model.dto.role.request.RoleDto;
 import com.danitherev.jjwt.model.entity.Permission;
@@ -26,14 +24,23 @@ import com.danitherev.jjwt.validations.RoleValidation;
 @Service
 public class PermissionServiceImpl implements PermissionService {
 
-    @Autowired
-    private PermissionRepository permissionRepository;
-    @Autowired
-    private PermissionMapper permissionMapper;
-    @Autowired
-    private PermissionValidation permissionValidation;
-    @Autowired
-    private RoleValidation roleValidation;
+
+    private final PermissionRepository permissionRepository;
+
+    private final PermissionMapper permissionMapper;
+
+    private final PermissionValidation permissionValidation;
+
+    private final RoleValidation roleValidation;
+
+    String customMessagePermission = "Permission not found";
+
+    public PermissionServiceImpl(PermissionRepository permissionRepository, PermissionMapper permissionMapper, PermissionValidation permissionValidation, RoleValidation roleValidation) {
+        this.permissionRepository = permissionRepository;
+        this.permissionMapper = permissionMapper;
+        this.permissionValidation = permissionValidation;
+        this.roleValidation = roleValidation;
+    }
 
     @Override
     public PermissionSimpleResponse create(PermissionDto permissionDto) {
@@ -71,7 +78,7 @@ public class PermissionServiceImpl implements PermissionService {
     public PermissionSimpleResponse update(Long id, PermissionDto permissionDto) {
         // Verificar que el permiso existe
         Permission permission = permissionRepository.findById(id)
-            .orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "Permission not found"));
+            .orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, customMessagePermission));
         // Convertir el nuevo nombre a mayúsculas
         permissionDto.setName(permissionDto.getName().toUpperCase());
 
@@ -110,7 +117,7 @@ public class PermissionServiceImpl implements PermissionService {
     public void delete(Long id) {
         // Obtener la entidad Permission
         Permission permission = permissionRepository.findById(id)
-            .orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "Permission not found"));
+            .orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, customMessagePermission));
         
         // Limpiar las relaciones con los roles
         for (Role role : permission.getRoles()) {
@@ -124,7 +131,7 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override    
     public PermissionResponse findById(Long id) {
-        Permission permission = permissionRepository.findById(id).orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, "Permission not found"));        
+        Permission permission = permissionRepository.findById(id).orElseThrow(() -> new ApiErrors(HttpStatus.NOT_FOUND, customMessagePermission));
         return permissionMapper.permissionDtoToPermissionResponse(permissionMapper.permissionToPermissionDto(permission));
     }
 

@@ -1,6 +1,5 @@
 package com.danitherev.jjwt.validations;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +11,12 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Component
 public class PermissionValidation {
-    @Autowired
-    private PermissionRepository permissionRepository;
+
+    private final PermissionRepository permissionRepository;
+
+    public PermissionValidation(PermissionRepository permissionRepository) {
+        this.permissionRepository = permissionRepository;
+    }
 
     public void validatePermissionDoesNotExists (String name){
         if (permissionRepository.existsByNameIgnoreCase(name)) {
@@ -22,8 +25,7 @@ public class PermissionValidation {
     }
 
     public Permission getExistingRole(String name) {
-        Permission permission = permissionRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new EntityNotFoundException("El permiso especificado no existe"));        
-        return permission;
+        return permissionRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new EntityNotFoundException("El permiso especificado no existe"));
     }
 }

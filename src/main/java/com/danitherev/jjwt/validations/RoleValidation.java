@@ -1,6 +1,5 @@
 package com.danitherev.jjwt.validations;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +11,12 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Component
 public class RoleValidation {
-    @Autowired
-    private RoleRepository roleRepository;
+
+    private final RoleRepository roleRepository;
+
+    public RoleValidation(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     public void validateRoleDoesNotExists(String name){
         if (roleRepository.existsByNameIgnoreCase(name)) {

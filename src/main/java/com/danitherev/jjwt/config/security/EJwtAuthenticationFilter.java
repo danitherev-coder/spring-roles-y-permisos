@@ -3,7 +3,6 @@ package com.danitherev.jjwt.config.security;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,10 +28,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class EJwtAuthenticationFilter  extends OncePerRequestFilter {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private CJwtService jwtService;
+
+    private final UserRepository userRepository;
+
+    private final CJwtService jwtService;
+
+    public EJwtAuthenticationFilter(UserRepository userRepository, CJwtService jwtService) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
@@ -45,22 +49,22 @@ public class EJwtAuthenticationFilter  extends OncePerRequestFilter {
                 return;
             }
 
-        String jwt = authHeader.split(" ")[1];
+            String jwt = authHeader.split(" ")[1];
 
-        // Validar el token usando el servicio CJwtService
-        if (jwtService.isTokenValid(jwt)) {
-            setErrors(request, response, HttpStatus.UNAUTHORIZED, "Token inválido");
-            return;
-        }
+            // Validar el token usando el servicio CJwtService
+            if (!jwtService.isTokenValid(jwt)) {
+                setErrors(request, response, HttpStatus.UNAUTHORIZED, "Token inválido");
+                return;
+            }
 
-        String username = jwtService.extractUsername(jwt);
-        User user = userRepository.findByUsername(username).get();
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                username, null, user.getAuthorities());
+            String username = jwtService.extractUsername(jwt);
+            User user = userRepository.findByUsername(username).orElseThrow();
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    username, null, user.getAuthorities());
 
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-            
-            filterChain.doFilter(request, response);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                filterChain.doFilter(request, response);
 
             
         } catch (SignatureException ex) {
@@ -72,7 +76,7 @@ public class EJwtAuthenticationFilter  extends OncePerRequestFilter {
         } catch (UnsupportedJwtException ex) {
             setErrors(request, response, HttpStatus.UNAUTHORIZED, "Token no soportado");
         } catch (Exception ex) {
-            setErrors(request, response, HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor");
+            setErrors(request, response, HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor: " + ex.getMessage());
         }
     }
 

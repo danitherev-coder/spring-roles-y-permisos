@@ -7,7 +7,6 @@ import com.danitherev.jjwt.model.dto.email.request.EmailConfirmationDto;
 import com.danitherev.jjwt.model.dto.email.response.EmailResponse;
 import com.danitherev.jjwt.model.dto.user.request.ChangePasswordDto;
 import com.danitherev.jjwt.services.EmailService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,27 +33,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private CJwtService jwtService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserValidation userValidation;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private RoleValidation roleValidation;
-    @Autowired
-    private RoleMapper roleMapper;
-    @Autowired
-    private RegisterMapper registerMapper;
-    @Autowired
-    private EmailService emailService;
+
+    private final UserRepository userRepository;
+    private final CJwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final UserValidation userValidation;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleValidation roleValidation;
+    private final RoleMapper roleMapper;
+    private final RegisterMapper registerMapper;
+    private final EmailService emailService;
+
     @Value("${api.url}")
     private String apiUrl;
 
+    public AuthServiceImpl(UserRepository userRepository, CJwtService jwtService, AuthenticationManager authenticationManager, UserValidation userValidation, PasswordEncoder passwordEncoder, RoleValidation roleValidation, RoleMapper roleMapper, RegisterMapper registerMapper, EmailService emailService) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+        this.userValidation = userValidation;
+        this.passwordEncoder = passwordEncoder;
+        this.roleValidation = roleValidation;
+        this.roleMapper = roleMapper;
+        this.registerMapper = registerMapper;
+        this.emailService = emailService;
+    }
 
     @Override
     public AuthResponse login(AuthDto authDto) {

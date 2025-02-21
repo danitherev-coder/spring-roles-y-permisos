@@ -3,7 +3,6 @@ package com.danitherev.jjwt.services.impl;
 import com.danitherev.jjwt.services.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -11,7 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
+import java.util.logging.Logger;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
@@ -19,11 +18,16 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class EmailServiceImpl implements EmailService {
 
+    Logger logger = Logger.getLogger(getClass().getName());
+
     @Value("${email.sender}")
     private String emailSender;
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
+
+    public EmailServiceImpl(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     @Override
     public void sendEmail(String[] toUser, String subject, String message) {
@@ -53,7 +57,7 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            logger.info(e.getMessage());
         }
     }
 
@@ -68,7 +72,7 @@ public class EmailServiceImpl implements EmailService {
             mailMessage.setText(message);
             mailSender.send(mailMessage);
         } catch (MailException e) {
-            System.out.println(e.getMessage());
+            logger.info(e.getMessage());
         }
     }
 

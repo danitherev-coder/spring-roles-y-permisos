@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 public class ApiErrors extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
-    private HttpStatus estado;
-    private String message;
+    private final HttpStatus estado;
+    private final String message;
 
     public ApiErrors(HttpStatus estado, String message) {
         super(message);
@@ -16,15 +16,8 @@ public class ApiErrors extends RuntimeException {
         this.message = message;
     }
 
-    public ApiErrors() {
-    }
-
     public HttpStatus getEstado() {
         return estado;
-    }
-
-    public void setEstado(HttpStatus estado) {
-        this.estado = estado;
     }
 
     @Override
@@ -32,7 +25,5 @@ public class ApiErrors extends RuntimeException {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+
 }
